@@ -1,0 +1,39 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29709.97
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCoreApi.Boilerplate", "AspNetCoreApi.Boilerplate\AspNetCoreApi.Boilerplate.csproj", "{2E7A9421-4005-4F38-899D-7764A6CFF4D2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{06ADE8D5-AE03-4540-B1CC-4016D826B952}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.gitignore = .gitignore
+		CodeAnalysis.ruleset = CodeAnalysis.ruleset
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleApiWebApp", "SampleApiWebApp\SampleApiWebApp.csproj", "{5F3747E9-802D-4C11-BFA4-44E96D39C55D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2E7A9421-4005-4F38-899D-7764A6CFF4D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E7A9421-4005-4F38-899D-7764A6CFF4D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E7A9421-4005-4F38-899D-7764A6CFF4D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E7A9421-4005-4F38-899D-7764A6CFF4D2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F3747E9-802D-4C11-BFA4-44E96D39C55D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F3747E9-802D-4C11-BFA4-44E96D39C55D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F3747E9-802D-4C11-BFA4-44E96D39C55D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F3747E9-802D-4C11-BFA4-44E96D39C55D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9441808F-7763-43AF-B347-BF3A3490F60C}
+	EndGlobalSection
+EndGlobal
