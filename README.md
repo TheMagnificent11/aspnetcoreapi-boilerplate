@@ -24,12 +24,12 @@ This is not a full-dependency tree, but just the major dependencies listed as cl
 
 ## How to use
 
-1. Create a new ASP.Net Core 3.1 API using the "blank" template.
+1. Create a new ASP.Net Core 3.1 API website using the "blank" template.
 2. Add the `AspNetCoreApi.Boilerplate` package reference.
-3. The other non-analyser package references shown in the sample applications [csproj-file](/SampleApiWebApp/SampleApiWebApp.csproj).
-4. Configure [Program.cs](/SampleApiWebApp/Program.cs).
-5. Create [Startup.cs](/SampleApiWebApp/Startup.cs) class and inherit from `AspNetCoreApi.Boilerplate.AppStartupBase`.
+3. Add the other non-analyser package references shown in the sample applications [csproj-file](/SampleApiWebApp/SampleApiWebApp.csproj).
+4. Configure [Program.cs](/SampleApiWebApp/Program.cs) as shown the linked sample.
+5. Create [Startup.cs](/SampleApiWebApp/Startup.cs) class and inherits from `AspNetCoreApi.Boilerplate.AppStartupBase`.
 6. Implement the abstract properties and methods.
-7. Add the following settings to your [appsettings.json](/SampleApiWebApp/appsettings.json).
+7. Add the settings to your [appsettings.json](/SampleApiWebApp/appsettings.json) shown in the linked sample.
 8. Implement the rest of your application.
   

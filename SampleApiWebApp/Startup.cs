@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Reflection;
 using AspNetCoreApi.Boilerplate;
@@ -56,16 +55,7 @@ namespace SampleApiWebApp
 
         protected override void MigrationDatabases(IApplicationBuilder app)
         {
-            if (app is null)
-            {
-                throw new ArgumentNullException(nameof(app));
-            }
-
-            using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
-            {
-                var dbContext = serviceScope.ServiceProvider.GetRequiredService<DatabaseContext>();
-                dbContext.Database.Migrate();
-            }
+            MigrationDatabase<DatabaseContext>(app);
         }
 
         protected override void ConfigureEntityManagement(ContainerBuilder builder)
