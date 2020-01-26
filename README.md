@@ -2,6 +2,9 @@
 
 Base classes, Autofac modules and extensions methods to help configure ASP.Net Core Web API apps.
 
+## Build Status
+[![Build Status](https://saji.visualstudio.com/Open%20Source/_apis/build/status/TheMagnificent11.aspnetcoreapi-boilerplate?branchName=master)](https://saji.visualstudio.com/Open%20Source/_build/latest?definitionId=37&branchName=master)
+
 ## Dependencies
 
 AspNetCoreApi.Boilerplate is a .Net Standard 2.1 class library that has the following dependencies.
