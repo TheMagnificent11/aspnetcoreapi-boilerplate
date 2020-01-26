@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
@@ -8,6 +9,7 @@ using Autofac.Features.Variance;
 using AutofacSerilogIntegration;
 using AutoMapper;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -77,7 +79,10 @@ namespace AspNetCoreApi.Boilerplate
             this.ConfigureHttpsRedirection(app);
             this.ConfigureRoutingAndEndpoints(app);
             this.ConfigureAuthenticationAndAuthorization(app);
+
             app.ConfigureSwagger(this.ApiName, this.ApiVersions);
+
+            this.MigrationDatabases(app);
         }
 
         /// <summary>
@@ -117,6 +122,26 @@ namespace AspNetCoreApi.Boilerplate
 
             services.ConfigureProblemDetails();
             services.ConfigureSwagger(this.ApiName, this.ApiVersions);
+        }
+
+        /// <summary>
+        /// Migrates database of the specified <see cref="DbContext"/> type to the latest version
+        /// </summary>
+        /// <typeparam name="T">Type of <see cref="DbContext"/> to use to migrate database</typeparam>
+        /// <param name="app">Application builder</param>
+        protected static void MigrationDatabase<T>(IApplicationBuilder app)
+            where T : DbContext
+        {
+            if (app is null)
+            {
+                throw new ArgumentNullException(nameof(app));
+            }
+
+            using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+            {
+                var dbContext = serviceScope.ServiceProvider.GetRequiredService<T>();
+                dbContext.Database.Migrate();
+            }
         }
 
         /// <summary>
