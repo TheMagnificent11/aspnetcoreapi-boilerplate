@@ -1,20 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
-using AspNetCoreApi.Boilerplate.Configuration;
+using AspNetCoreApi.Boilerplate.Infrastructure;
 using Autofac;
 using Autofac.Features.Variance;
 using AutofacSerilogIntegration;
 using AutoMapper;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using RequestManagement;
 using RequestManagement.Logging;
+using Serilog;
 using Serilog.Events;
 
 namespace AspNetCoreApi.Boilerplate
@@ -65,20 +66,31 @@ namespace AspNetCoreApi.Boilerplate
         /// </summary>
         /// <param name="app">Application builder</param>
         /// <param name="env">Host environment</param>
-        public virtual void Configure([NotNull] IApplicationBuilder app, [NotNull] IHostEnvironment env)
+        public virtual void Configure(IApplicationBuilder app, IHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
-                this.ConfigureLocalDevelopmentEnvironment(app);
+                app.UseDeveloperExceptionPage();
+                app.UseDatabaseErrorPage();
             }
             else
             {
-                this.ConfigureDeployedEnvironment(app);
+                app.UseHsts();
             }
 
-            this.ConfigureHttpsRedirection(app);
-            this.ConfigureRoutingAndEndpoints(app);
+            app.UseHttpsRedirection();
+
+            app.UseSerilogRequestLogging();
+
+            app.UseRouting();
+
             this.ConfigureAuthenticationAndAuthorization(app);
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapHealthChecks("/health", this.GetHealthCheckOptions());
+                endpoints.MapControllers();
+            });
 
             app.ConfigureSwagger(this.ApiName, this.ApiVersions);
 
@@ -89,7 +101,7 @@ namespace AspNetCoreApi.Boilerplate
         /// Configure dependency injection container
         /// </summary>
         /// <param name="builder">Container builder</param>
-        public virtual void ConfigureContainer([NotNull] ContainerBuilder builder)
+        public virtual void ConfigureContainer(ContainerBuilder builder)
         {
             builder.RegisterLogger();
 
@@ -104,7 +116,7 @@ namespace AspNetCoreApi.Boilerplate
         /// Configures services
         /// </summary>
         /// <param name="services">Services collection</param>
-        public virtual void ConfigureServices([NotNull] IServiceCollection services)
+        public virtual void ConfigureServices(IServiceCollection services)
         {
             var appSettings = this.GetSettings<ApplicationSettings>("ApplicationSettings");
             var seqSettings = this.GetSettings<SeqSettings>("SeqSettings");
@@ -118,9 +130,12 @@ namespace AspNetCoreApi.Boilerplate
                 services.AddAutoMapper(this.AutoMapperAssemblies);
             }
 
-            this.ConfigureControllers(services);
+            services.AddControllers(options => options.Filters.Add(new ExceptionFilter()));
 
             services.ConfigureProblemDetails();
+
+            this.ConfigureHealthChecks(services.AddHealthChecks());
+
             services.ConfigureSwagger(this.ApiName, this.ApiVersions);
         }
 
@@ -161,40 +176,6 @@ namespace AspNetCoreApi.Boilerplate
         }
 
         /// <summary>
-        /// Configures local development environment
-        /// </summary>
-        /// <param name="app">Application builder</param>
-        /// <example>
-        /// app.UseDeveloperExceptionPage();
-        /// app.UseDatabaseErrorPage();
-        /// </example>
-        protected abstract void ConfigureLocalDevelopmentEnvironment([NotNull] IApplicationBuilder app);
-
-        /// <summary>
-        /// Configures deployed environment
-        /// </summary>
-        /// <param name="app">Application builder</param>
-        /// <example>app.UseHsts();</example>
-        protected abstract void ConfigureDeployedEnvironment([NotNull] IApplicationBuilder app);
-
-        /// <summary>
-        /// Configures HTTPS redirection
-        /// </summary>
-        /// <param name="app">Application builder</param>
-        /// <example>app.UseHttpsRedirection();</example>
-        protected abstract void ConfigureHttpsRedirection([NotNull] IApplicationBuilder app);
-
-        /// <summary>
-        /// Configures routing
-        /// </summary>
-        /// <param name="app">Application builder</param>
-        /// <example>
-        /// app.UseRouting();
-        /// app.UseEndpoints(endpoints => endpoints.MapControllers());
-        /// </example>
-        protected abstract void ConfigureRoutingAndEndpoints([NotNull] IApplicationBuilder app);
-
-        /// <summary>
         /// Configures authentication
         /// </summary>
         /// <param name="app">Application builder</param>
@@ -202,19 +183,25 @@ namespace AspNetCoreApi.Boilerplate
         /// app.UseAuthentication();
         /// app.UseAuthorization();
         /// </example>
-        protected abstract void ConfigureAuthenticationAndAuthorization([NotNull] IApplicationBuilder app);
+        protected virtual void ConfigureAuthenticationAndAuthorization(IApplicationBuilder app)
+        {
+        }
 
         /// <summary>
         /// Migrates databases
         /// </summary>
         /// <param name="app">Application builder</param>
-        protected abstract void MigrationDatabases([NotNull] IApplicationBuilder app);
+        protected virtual void MigrationDatabases(IApplicationBuilder app)
+        {
+        }
 
         /// <summary>
         /// Configures <see cref="EntityManagement"/>
         /// </summary>
         /// <param name="builder">Container builder</param>
-        protected abstract void ConfigureEntityManagement([NotNull] ContainerBuilder builder);
+        protected virtual void ConfigureEntityManagement(ContainerBuilder builder)
+        {
+        }
 
         /// <summary>
         /// Configures the database contexts used by this application
@@ -223,13 +210,31 @@ namespace AspNetCoreApi.Boilerplate
         /// <example>
         /// services.AddDbContextPool&lt;ApplicationDbContext&gt;(options => options.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection")));
         /// </example>
-        protected abstract void ConfigureDatabaseContexts([NotNull] IServiceCollection services);
+        protected virtual void ConfigureDatabaseContexts(IServiceCollection services)
+        {
+        }
 
         /// <summary>
-        /// Configures API controllers
+        /// Configures health checks
         /// </summary>
-        /// <param name="services">Services collection</param>
-        /// <example>services.AddControllers(options => options.Filters.Add(new ExceptionFilter()));</example>
-        protected abstract void ConfigureControllers([NotNull] IServiceCollection services);
+        /// <param name="builder">Health check builder</param>
+        protected virtual void ConfigureHealthChecks(IHealthChecksBuilder builder)
+        {
+        }
+
+        /// <summary>
+        /// Gets the health check otions
+        /// </summary>
+        /// <returns>Health check options</returns>
+        protected virtual HealthCheckOptions GetHealthCheckOptions()
+        {
+            var appSettings = this.GetSettings<ApplicationSettings>("ApplicationSettings");
+            var responseWriter = new HealthCheckResponseWriter(appSettings);
+
+            return new HealthCheckOptions
+            {
+                ResponseWriter = responseWriter.WriteToResponse
+            };
+        }
     }
 }

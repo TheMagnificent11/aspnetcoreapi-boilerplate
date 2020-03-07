@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace AspNetCoreApi.Boilerplate.Configuration
+namespace AspNetCoreApi.Boilerplate.Infrastructure
 {
     /// <summary>
     /// Problem Details Configuration

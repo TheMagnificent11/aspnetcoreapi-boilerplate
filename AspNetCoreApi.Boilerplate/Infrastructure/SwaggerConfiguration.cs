@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 
-namespace AspNetCoreApi.Boilerplate.Configuration
+namespace AspNetCoreApi.Boilerplate.Infrastructure
 {
     /// <summary>
     /// Swagger Configuration

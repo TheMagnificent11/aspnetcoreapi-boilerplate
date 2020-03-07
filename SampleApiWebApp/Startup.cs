@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using RequestManagement;
 using SampleApiWebApp.Data;
 
 namespace SampleApiWebApp
@@ -27,32 +26,6 @@ namespace SampleApiWebApp
 
         protected override IList<Assembly> AutoMapperAssemblies => new List<Assembly> { typeof(Startup).Assembly };
 
-        protected override void ConfigureLocalDevelopmentEnvironment(IApplicationBuilder app)
-        {
-            app.UseDeveloperExceptionPage();
-            app.UseDatabaseErrorPage();
-        }
-
-        protected override void ConfigureDeployedEnvironment(IApplicationBuilder app)
-        {
-            app.UseHsts();
-        }
-
-        protected override void ConfigureHttpsRedirection(IApplicationBuilder app)
-        {
-            app.UseHttpsRedirection();
-        }
-
-        protected override void ConfigureRoutingAndEndpoints(IApplicationBuilder app)
-        {
-            app.UseRouting();
-            app.UseEndpoints(endpoints => endpoints.MapControllers());
-        }
-
-        protected override void ConfigureAuthenticationAndAuthorization(IApplicationBuilder app)
-        {
-        }
-
         protected override void MigrationDatabases(IApplicationBuilder app)
         {
             MigrationDatabase<DatabaseContext>(app);
@@ -69,9 +42,9 @@ namespace SampleApiWebApp
                 options.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection")));
         }
 
-        protected override void ConfigureControllers(IServiceCollection services)
+        protected override void ConfigureHealthChecks(IHealthChecksBuilder builder)
         {
-            services.AddControllers(options => options.Filters.Add(new ExceptionFilter()));
+            builder.AddCheck<DatabaseHealthCheck<DatabaseContext>>(nameof(DatabaseContext));
         }
     }
 }

@@ -17,6 +17,7 @@ namespace SampleApiWebApp
                     logging.ClearProviders();
                     logging.AddSerilog();
                 })
+                .UseSerilog()
                 .UseServiceProviderFactory(new AutofacServiceProviderFactory())
                 .ConfigureWebHostDefaults(webHostBuilder =>
                 {
