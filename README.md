@@ -3,7 +3,7 @@
 Base classes, Autofac modules and extensions methods to help configure ASP.Net Core Web API apps.
 
 ## Build Status
-[![Build Status](https://saji.visualstudio.com/Open%20Source/_apis/build/status/TheMagnificent11.aspnetcoreapi-boilerplate?branchName=master)](https://saji.visualstudio.com/Open%20Source/_build/latest?definitionId=37&branchName=master)
+[![Build Status](https://saji.visualstudio.com/Open%20Source/_apis/build/status/AspNetCoreApi-Boilerplate?branchName=master)](https://saji.visualstudio.com/Open%20Source/_build/latest?definitionId=37&branchName=master)
 
 ## Dependencies
 
