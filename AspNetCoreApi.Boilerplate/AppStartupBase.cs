@@ -8,6 +8,7 @@ using Autofac.Features.Variance;
 using AutofacSerilogIntegration;
 using AutoMapper;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -25,6 +26,8 @@ namespace AspNetCoreApi.Boilerplate
     /// </summary>
     public abstract class AppStartupBase
     {
+        private const string CorsPolicy = "CorsPolicy";
+
         /// <summary>
         /// Initializes a new instance of the <see cref="AppStartupBase"/> class
         /// </summary>
@@ -78,6 +81,8 @@ namespace AspNetCoreApi.Boilerplate
                 app.UseHsts();
             }
 
+            app.UseCors(CorsPolicy);
+
             app.UseHttpsRedirection();
 
             app.UseSerilogRequestLogging();
@@ -120,6 +125,8 @@ namespace AspNetCoreApi.Boilerplate
         {
             var appSettings = this.GetSettings<ApplicationSettings>("ApplicationSettings");
             var seqSettings = this.GetSettings<SeqSettings>("SeqSettings");
+
+            services.AddCors(o => o.AddPolicy(CorsPolicy, this.ConfigureCorsPolicy));
 
             services.ConfigureLogging(this.Configuration, LogEventLevel.Debug, appSettings, seqSettings);
 
@@ -173,6 +180,31 @@ namespace AspNetCoreApi.Boilerplate
             this.Configuration.Bind(configurationSection, settings);
 
             return settings;
+        }
+
+        /// <summary>
+        /// Configures the CORS policy
+        /// </summary>
+        /// <param name="policyBuilder">CORS policy builder</param>
+        protected virtual void ConfigureCorsPolicy(CorsPolicyBuilder policyBuilder)
+        {
+            if (policyBuilder is null)
+            {
+                throw new ArgumentNullException(nameof(policyBuilder));
+            }
+
+            var origins = (this.Configuration.GetValue<string>("AllowedOrigins") ?? string.Empty)
+                .Split(';')
+                .Distinct()
+                .Where(x => !string.IsNullOrEmpty(x))
+                .ToArray();
+
+            policyBuilder = origins.Any() ? policyBuilder.WithOrigins(origins) : policyBuilder.AllowAnyOrigin();
+
+            policyBuilder
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
         }
 
         /// <summary>
