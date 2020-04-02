@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using AspNetCore.Mediatr;
 using AspNetCoreApi.Boilerplate.Infrastructure;
+using AspNetCoreApi.Boilerplate.Infrastructure.Logging;
 using Autofac;
 using Autofac.Features.Variance;
 using AutofacSerilogIntegration;
@@ -14,8 +16,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using RequestManagement;
-using RequestManagement.Logging;
 using Serilog;
 using Serilog.Events;
 
@@ -114,7 +114,7 @@ namespace AspNetCoreApi.Boilerplate
 
             this.ConfigureEntityManagement(builder);
 
-            builder.RegisterModule(new RequestManagementModule(this.MediatrAssemblies));
+            builder.RegisterModule(new MediationModule(this.MediatrAssemblies));
         }
 
         /// <summary>
