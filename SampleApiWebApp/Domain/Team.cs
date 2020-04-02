@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using EntityManagement.Core;
-using FluentValidation.Extensions;
 using SampleApiWebApp.Domain.Validators;
 
 namespace SampleApiWebApp.Domain
 {
-    public class Team : BaseEntity<long>, ITeam
+    public class Team : BaseEntityWithValidation<Team, long, TeamValidator>, ITeam
     {
         public string Name { get; protected set; }
 
@@ -21,17 +18,9 @@ namespace SampleApiWebApp.Domain
 
             team.ApplyTrackingData();
 
-            var errors = ValidateTeam(team);
-            if (errors.Any()) throw new InvalidOperationException(errors.GetMultiLineErrorMessage());
+            Validate(team);
 
             return team;
-        }
-
-        public static IDictionary<string, IEnumerable<string>> ValidateTeam(Team team)
-        {
-            var validator = new TeamValidator();
-
-            return validator.ValidateEntity(team);
         }
 
         public void ChangeName(string newName)
@@ -40,8 +29,7 @@ namespace SampleApiWebApp.Domain
 
             this.ApplyTrackingData();
 
-            var errors = ValidateTeam(this);
-            if (errors.Any()) throw new InvalidOperationException(errors.GetMultiLineErrorMessage());
+            Validate(this);
         }
 
         public static class FieldMaxLenghts
