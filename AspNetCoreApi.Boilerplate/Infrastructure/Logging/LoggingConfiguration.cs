@@ -42,17 +42,16 @@ namespace AspNetCoreApi.Boilerplate.Infrastructure.Logging
                 throw new ArgumentNullException(nameof(seqSettings));
             }
 
-            var levelSwitch = new LoggingLevelSwitch
+            var serilogLevelSwitch = new LoggingLevelSwitch
             {
                 MinimumLevel = minimumLevel
             };
 
             var config = new LoggerConfiguration()
                 .ReadFrom.Configuration(configuration)
-                .MinimumLevel.ControlledBy(levelSwitch)
+                .MinimumLevel.ControlledBy(serilogLevelSwitch)
                 .WriteTo.Trace()
                 .WriteTo.Console()
-                .WriteTo.Seq(seqSettings.Uri, apiKey: seqSettings.Key, controlLevelSwitch: levelSwitch)
                 .Enrich.WithProperty("ApplicationName", applicationSettings.Name)
                 .Enrich.WithProperty("Environment", applicationSettings.Environment)
                 .Enrich.WithProperty("Version", applicationSettings.Version)
@@ -61,6 +60,16 @@ namespace AspNetCoreApi.Boilerplate.Infrastructure.Logging
                 .Enrich.WithMachineName()
                 .Enrich.WithThreadId()
                 .Enrich.FromLogContext();
+
+            if (seqSettings.IsEnabled)
+            {
+                var seqLevelSwitch = new LoggingLevelSwitch
+                {
+                    MinimumLevel = seqSettings.MinimumLogEventLevel
+                };
+
+                config.WriteTo.Seq(seqSettings.Uri, apiKey: seqSettings.Key, controlLevelSwitch: seqLevelSwitch);
+            }
 
             Log.Logger = config.CreateLogger();
 
