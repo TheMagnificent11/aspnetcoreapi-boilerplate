@@ -30,6 +30,10 @@ namespace AspNetCoreApi.Boilerplate.Infrastructure
                 case ValidationException validationException:
                     context.Result = HandleValidationException(validationException);
                     break;
+
+                case UnauthorizedAccessException _:
+                    context.Result = new ForbidResult();
+                    break;
             }
 
             return Task.CompletedTask;
