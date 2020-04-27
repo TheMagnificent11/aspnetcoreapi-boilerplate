@@ -19,7 +19,7 @@ namespace AspNetCoreApi.Boilerplate.Infrastructure
         /// </summary>
         /// <param name="context">Exception contect</param>
         /// <returns>Asynchronous task</returns>
-        public Task OnExceptionAsync(ExceptionContext context)
+        public virtual Task OnExceptionAsync(ExceptionContext context)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
