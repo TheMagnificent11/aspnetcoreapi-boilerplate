@@ -2,9 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using AspNetCore.Mediatr;
 using AspNetCoreApi.Boilerplate.Infrastructure;
-using AspNetCoreApi.Boilerplate.Infrastructure.Logging;
+using AspNetCoreApi.Infrastructure.Exceptions;
+using AspNetCoreApi.Infrastructure.HealthChecks;
+using AspNetCoreApi.Infrastructure.Logging;
+using AspNetCoreApi.Infrastructure.Mediation;
+using AspNetCoreApi.Infrastructure.Settings;
+using AspNetCoreApi.Infrastructure.Swagger;
 using Autofac;
 using Autofac.Features.Variance;
 using AutofacSerilogIntegration;
@@ -123,8 +127,8 @@ namespace AspNetCoreApi.Boilerplate
         /// <param name="services">Services collection</param>
         public virtual void ConfigureServices(IServiceCollection services)
         {
-            var appSettings = this.GetSettings<ApplicationSettings>("ApplicationSettings");
-            var seqSettings = this.GetSettings<SeqSettings>("SeqSettings");
+            var appSettings = this.Configuration.GetSettings<ApplicationSettings>("ApplicationSettings");
+            var seqSettings = this.Configuration.GetSettings<SeqSettings>("SeqSettings");
 
             services.AddCors(o => o.AddPolicy(CorsPolicy, this.ConfigureCorsPolicy));
 
@@ -164,22 +168,6 @@ namespace AspNetCoreApi.Boilerplate
                 var dbContext = serviceScope.ServiceProvider.GetRequiredService<T>();
                 dbContext.Database.Migrate();
             }
-        }
-
-        /// <summary>
-        /// Get strongly-typed settings from appsettings.json
-        /// </summary>
-        /// <typeparam name="T">Type to which to bind the settings</typeparam>
-        /// <param name="configurationSection">Name of the configuration section containing the settings</param>
-        /// <returns>Strongly-typed settings</returns>
-        protected T GetSettings<T>(string configurationSection)
-            where T : class, new()
-        {
-            var settings = new T();
-
-            this.Configuration.Bind(configurationSection, settings);
-
-            return settings;
         }
 
         /// <summary>
@@ -260,13 +248,7 @@ namespace AspNetCoreApi.Boilerplate
         /// <returns>Health check options</returns>
         protected virtual HealthCheckOptions GetHealthCheckOptions()
         {
-            var appSettings = this.GetSettings<ApplicationSettings>("ApplicationSettings");
-            var responseWriter = new HealthCheckResponseWriter(appSettings);
-
-            return new HealthCheckOptions
-            {
-                ResponseWriter = responseWriter.WriteToResponse
-            };
+            return this.Configuration.GetHealthCheckOptions("ApplicationSettings");
         }
     }
 }

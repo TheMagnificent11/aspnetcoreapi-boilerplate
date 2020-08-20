@@ -12,16 +12,14 @@ AspNetCoreApi.Boilerplate is a .Net Standard 2.1 class library that has the foll
 
 This is not a full-dependency tree, but just the major dependencies listed as close to the top of the tree as possible.
 
-- [AspNetCore.Mediatr](https://www.nuget.org/packages/AspNetCore.Mediatr/): Mediatr configuration
+- [AspNetCoreApi.Infrastructure](https://www.nuget.org/packages/AspNetCoreApi.Infrastructure/): Serilog, Mediatr, Swagger, Problem Details and global exception filter configuration
   - [MediatR](https://www.nuget.org/packages/MediatR/)
   - [EntityManagement](https://www.nuget.org/packages/EntityManagement/): `EntityFramework.Core` repository pattern
-  - [EntityManagement.Core](https://www.nuget.org/packages/EntityManagement.Core/): Base entites and interfaces for `EntityManagment` written in a DDD-style
-    - [FluentValidation](https://www.nuget.org/packages/FluentValidation/): Used for validation rules in domain entities
-  - [Microsoft.EntityFrameworkCore](https://www.nuget.org/packages/Microsoft.EntityFrameworkCore/)R](https://www.nuget.org/packages/MediatR/)
-- [Serilog](https://www.nuget.org/packages/Serilog/)
-- [Autofac](https://www.nuget.org/packages/Autofac/)
-- [AutoMapper](https://www.nuget.org/packages/AutoMapper/)
-- [Swashbuckle.AspNetCore](https://www.nuget.org/packages/Swashbuckle.AspNetCore/)
+    - [Microsoft.EntityFrameworkCore](https://www.nuget.org/packages/Microsoft.EntityFrameworkCore/)
+    - [EntityManagement.Core](https://www.nuget.org/packages/EntityManagement.Core/): Base entites and interfaces for `EntityManagment` written in a DDD-style
+      - [FluentValidation](https://www.nuget.org/packages/FluentValidation/): Used for validation rules in domain entities
+  - [Serilog](https://www.nuget.org/packages/Serilog/)
+  - [Swashbuckle.AspNetCore](https://www.nuget.org/packages/Swashbuckle.AspNetCore/)
 
 ## How to use
 
